@@ -1,0 +1,30 @@
+{
+  "name": "Rıza Kaptan Arı Çiftliği",
+  "short_name": "Rıza Kaptan",
+  "description": "Rıza Kaptan Arı Çiftliği kovan takip uygulaması",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#3D2B1A",
+  "theme_color": "#3D2B1A",
+  "orientation": "portrait-primary",
+  "lang": "tr",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "productivity",
+    "utilities"
+  ],
+  "screenshots": []
+}
