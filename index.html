@@ -5,790 +5,803 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Rıza Kaptan">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Rıza Kaptan Arı Çiftliği">
 <meta name="theme-color" content="#3D2B1A">
+<meta name="description" content="Arı kovanı takip ve sesli not uygulaması">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<title>Rıza Kaptan Arı Çiftliği</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
-<title>Rıza Kaptan Arı Çiftliği</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;overflow:hidden;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#1a0d05;color:#3D2B1A;}
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Serif+4:ital,wght@0,300;0,400;1,300&display=swap');
+  :root {
+    --honey:#D4860A; --honey-light:#F5B942; --honey-dark:#8B5500;
+    --wax:#FFF8E7; --wax-dark:#F0E4C0; --bark:#3D2B1A; --bark-mid:#6B4C2A;
+    --smoke:#F7F2EA; --forest:#2D5016; --forest-light:#4A7C23; --cream:#FFFCF4;
+    --rec:#D32F2F;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Source Serif 4',Georgia,serif;background:var(--smoke);color:var(--bark);min-height:100vh;
+    background-image:radial-gradient(ellipse at 10% 20%,rgba(212,134,10,.07) 0%,transparent 50%),radial-gradient(ellipse at 90% 80%,rgba(45,80,22,.05) 0%,transparent 50%);}
+  header{background:var(--bark);color:var(--wax);padding:24px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(61,43,26,.3);}
+  .logo{font-family:'Playfair Display',serif;font-size:1.6rem;letter-spacing:.02em;}
+  .logo span{color:var(--honey-light);}
+  .header-sub{font-size:.78rem;color:var(--wax-dark);letter-spacing:.1em;text-transform:uppercase;margin-top:2px;}
+  .btn-add{background:var(--honey);color:white;border:none;padding:10px 22px;border-radius:4px;font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;transition:all .2s;}
+  .btn-add:hover{background:var(--honey-light);transform:translateY(-1px);box-shadow:0 4px 12px rgba(212,134,10,.4);}
+  .btn-qr-scan{background:var(--forest);color:white;border:none;padding:10px 18px;border-radius:4px;font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;transition:all .2s;}
+  .btn-qr-scan:hover{background:var(--forest-light);transform:translateY(-1px);}
+  main{max-width:1100px;margin:0 auto;padding:36px 24px;}
+  .stats-bar{display:flex;gap:16px;margin-bottom:32px;}
+  .stat{background:white;border:1px solid var(--wax-dark);border-radius:6px;padding:14px 20px;flex:1;text-align:center;}
+  .stat-num{font-family:'Playfair Display',serif;font-size:2rem;color:var(--honey);}
+  .stat-label{font-size:.75rem;color:var(--bark-mid);text-transform:uppercase;letter-spacing:.08em;margin-top:2px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;}
+  .kovan-card{background:white;border:1px solid var(--wax-dark);border-radius:8px;overflow:hidden;transition:all .25s;cursor:pointer;}
+  .kovan-card:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(61,43,26,.15);border-color:var(--honey);}
+  .kovan-top{background:var(--bark);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;}
+  .kovan-id{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--honey-light);}
+  .kovan-date{font-size:.72rem;color:var(--wax-dark);}
+  .kovan-body{padding:16px;}
+  .status-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.72rem;letter-spacing:.05em;margin-bottom:10px;}
+  .status-iyi{background:#E8F5E9;color:#2E7D32;border:1px solid #A5D6A7;}
+  .status-orta{background:#FFF8E1;color:#F57F17;border:1px solid #FFE082;}
+  .status-zayif{background:#FFEBEE;color:#C62828;border:1px solid #EF9A9A;}
+  .kovan-note{font-size:.83rem;color:var(--bark-mid);line-height:1.5;min-height:38px;font-style:italic;}
+  .kovan-footer{border-top:1px solid var(--wax-dark);padding:10px 16px;display:flex;justify-content:space-between;align-items:center;background:var(--wax);}
+  .media-count{font-size:.75rem;color:var(--bark-mid);}
+  .media-count b{color:var(--honey-dark);}
+  .qr-mini{width:36px;height:36px;}
+  .qr-mini canvas,.qr-mini img{width:36px!important;height:36px!important;}
+  .overlay{display:none;position:fixed;inset:0;background:rgba(30,20,10,.7);z-index:200;backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:20px;}
+  .overlay.open{display:flex;}
+  .modal{background:var(--cream);border-radius:12px;width:100%;max-width:700px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.4);animation:slideUp .25s ease;}
+  @keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+  .modal-header{background:var(--bark);color:var(--wax);padding:18px 24px;display:flex;justify-content:space-between;align-items:center;border-radius:12px 12px 0 0;position:sticky;top:0;z-index:10;}
+  .modal-title{font-family:'Playfair Display',serif;font-size:1.2rem;}
+  .btn-close{background:none;border:none;color:var(--wax);font-size:1.4rem;cursor:pointer;opacity:.7;transition:opacity .2s;}
+  .btn-close:hover{opacity:1;}
+  .modal-body{padding:24px;}
+  .form-row{margin-bottom:18px;}
+  label{display:block;font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--bark-mid);margin-bottom:6px;}
+  input[type=text],textarea,select{width:100%;padding:9px 12px;border:1px solid var(--wax-dark);border-radius:4px;font-family:'Source Serif 4',serif;font-size:.9rem;background:white;color:var(--bark);transition:border-color .2s;}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--honey);}
+  textarea{resize:vertical;min-height:80px;}
+  .form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;}
+  .section-divider{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--bark-mid);border-bottom:1px solid var(--wax-dark);padding-bottom:6px;margin-bottom:14px;}
+  .qr-section{background:var(--wax);border:1px solid var(--wax-dark);border-radius:8px;padding:20px;text-align:center;margin-bottom:18px;}
+  .qr-section h4{font-family:'Playfair Display',serif;font-size:1rem;color:var(--bark);margin-bottom:4px;}
+  .qr-section p{font-size:.75rem;color:var(--bark-mid);margin-bottom:14px;}
+  #qrDisplay{display:flex;justify-content:center;margin:14px 0;}
+  #qrDisplay canvas,#qrDisplay img{border:4px solid white;box-shadow:0 2px 12px rgba(0,0,0,.15);}
+  .btn-dl{background:var(--forest);color:white;border:none;padding:8px 18px;border-radius:4px;font-family:'Source Serif 4',serif;font-size:.83rem;cursor:pointer;transition:all .2s;margin-top:8px;}
+  .btn-dl:hover{background:var(--forest-light);}
 
-/* ── HEADER ── */
-.hdr{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(61,43,26,0.97);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(0,0,0,.4);}
-.hdr-logo{color:#F5B942;font-size:1.4rem;font-weight:800;letter-spacing:-.01em;}
-.hdr-logo small{display:block;color:rgba(245,185,66,.5);font-size:.65rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;}
-.hdr-btns{display:flex;gap:8px;}
-.hbtn{background:rgba(255,255,255,.1);border:none;color:white;width:48px;height:48px;border-radius:12px;font-size:1.4rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.hbtn:active{background:rgba(255,255,255,.25);}
-.hbtn-ana{background:#D4860A;padding:0 20px;width:auto;font-size:1rem;font-weight:700;border-radius:12px;}
-.hbtn-ana:active{background:#F5B942;}
+  /* SES KAYIT */
+  .audio-section{background:linear-gradient(135deg,#1a0a0a 0%,#2d1a0a 100%);border-radius:10px;padding:20px;margin-bottom:18px;border:1px solid rgba(212,134,10,.3);}
+  .audio-section-title{color:var(--honey-light);font-family:'Playfair Display',serif;font-size:1rem;margin-bottom:4px;}
+  .audio-section-sub{font-size:.73rem;color:rgba(255,248,231,.5);margin-bottom:16px;}
+  .rec-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+  .btn-rec{width:52px;height:52px;border-radius:50%;background:var(--rec);border:3px solid rgba(255,255,255,.2);color:white;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;box-shadow:0 0 0 0 rgba(211,47,47,.5);}
+  .btn-rec.recording{animation:pulse-rec 1.2s infinite;background:#B71C1C;}
+  .btn-rec:disabled{opacity:.4;cursor:not-allowed;animation:none;}
+  @keyframes pulse-rec{0%{box-shadow:0 0 0 0 rgba(211,47,47,.7)}70%{box-shadow:0 0 0 14px rgba(211,47,47,0)}100%{box-shadow:0 0 0 0 rgba(211,47,47,0)}}
+  .btn-stop{width:40px;height:40px;border-radius:6px;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);color:white;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
+  .btn-stop:hover{background:rgba(255,255,255,.2);}
+  .btn-stop:disabled{opacity:.3;cursor:not-allowed;}
+  .rec-status{flex:1;min-width:120px;}
+  .rec-label{font-size:.75rem;color:rgba(255,248,231,.6);text-transform:uppercase;letter-spacing:.08em;}
+  .rec-timer{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--honey-light);letter-spacing:.1em;margin-top:2px;}
+  .rec-timer.active{color:#EF9A9A;}
+  .waveform-wrap{width:100%;height:48px;margin-top:14px;border-radius:6px;overflow:hidden;background:rgba(0,0,0,.3);}
+  #waveCanvas{width:100%;height:48px;display:block;}
+  .audio-list{margin-top:14px;display:flex;flex-direction:column;gap:8px;}
+  .audio-item{background:rgba(255,255,255,.07);border:1px solid rgba(212,134,10,.2);border-radius:8px;padding:10px 12px;display:flex;align-items:center;gap:10px;}
+  .audio-item audio{flex:1;height:32px;min-width:0;}
+  .audio-info{flex:1;min-width:0;}
+  .audio-item-name{font-size:.75rem;color:rgba(255,248,231,.7);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .audio-item-meta{font-size:.68rem;color:rgba(255,248,231,.4);}
+  .btn-del-audio{background:none;border:none;color:rgba(239,154,154,.7);cursor:pointer;font-size:1rem;transition:color .2s;flex-shrink:0;}
+  .btn-del-audio:hover{color:#EF9A9A;}
 
-/* ── SAYAÇ BAR ── */
-.sayac{position:fixed;top:72px;left:0;right:0;z-index:99;background:rgba(61,43,26,.95);padding:8px 16px;display:flex;align-items:center;justify-content:space-between;}
-.sayac-bilgi{color:rgba(245,185,66,.8);font-size:1rem;font-weight:600;}
-.sayac-nav{display:flex;gap:8px;}
-.nav-btn{background:rgba(255,255,255,.1);border:none;color:white;width:38px;height:38px;border-radius:8px;font-size:1.2rem;cursor:pointer;}
-.nav-btn:active{background:rgba(255,255,255,.25);}
+  /* DRIVE */
+  .drive-section{background:white;border:1px solid var(--wax-dark);border-radius:8px;padding:16px;margin-bottom:18px;}
+  .drive-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .drive-title{font-family:'Playfair Display',serif;font-size:.95rem;color:var(--bark);}
+  .drive-sub{font-size:.73rem;color:var(--bark-mid);}
+  .drive-input-row{display:flex;gap:8px;}
+  .drive-input-row input{flex:1;}
+  .btn-drive-add{background:#1a73e8;color:white;border:none;padding:8px 14px;border-radius:4px;font-family:'Source Serif 4',serif;font-size:.8rem;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0;}
+  .btn-drive-add:hover{background:#1557b0;}
+  .drive-links{margin-top:10px;display:flex;flex-direction:column;gap:6px;}
+  .drive-link-item{background:var(--wax);border:1px solid var(--wax-dark);border-radius:4px;padding:7px 10px;display:flex;align-items:center;gap:8px;font-size:.8rem;}
+  .drive-link-item a{color:#1a73e8;text-decoration:none;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .drive-link-item a:hover{text-decoration:underline;}
+  .btn-del-link{background:none;border:none;color:#C62828;cursor:pointer;font-size:.9rem;opacity:.6;transition:opacity .2s;}
+  .btn-del-link:hover{opacity:1;}
 
-/* ── KOVAN SLIDE CONTAINER ── */
-.slide-wrap{position:fixed;top:116px;bottom:0;left:0;right:0;}
-.slides{width:100%;height:100%;overflow-y:scroll;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;}
-.slides::-webkit-scrollbar{display:none;}
+  .modal-footer{padding:16px 24px;border-top:1px solid var(--wax-dark);display:flex;justify-content:flex-end;gap:10px;position:sticky;bottom:0;background:var(--cream);}
+  .btn-save{background:var(--honey);color:white;border:none;padding:10px 28px;border-radius:4px;font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;transition:all .2s;}
+  .btn-save:hover{background:var(--honey-light);}
+  .btn-cancel{background:none;color:var(--bark-mid);border:1px solid var(--wax-dark);padding:10px 20px;border-radius:4px;font-family:'Source Serif 4',serif;font-size:.9rem;cursor:pointer;transition:all .2s;}
+  .btn-cancel:hover{background:var(--wax);}
 
-/* ── TEK KOVAN SAYFASI ── */
-.kovan-slide{width:100%;height:100%;scroll-snap-align:start;scroll-snap-stop:always;display:flex;flex-direction:column;background:#FFF8E7;overflow:hidden;}
-
-.k-ust{background:#3D2B1A;padding:20px 18px 18px;}
-.k-ad{font-size:2.2rem;font-weight:800;color:#F5B942;line-height:1.2;}
-.k-tarih{font-size:1rem;color:rgba(245,185,66,.5);margin-top:4px;}
-.k-durum{display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:10px 20px;border-radius:24px;font-size:1.15rem;font-weight:700;}
-.d-iyi{background:#E8F5E9;color:#2E7D32;}
-.d-orta{background:#FFF8E1;color:#E65100;}
-.d-zayif{background:#FFEBEE;color:#C62828;}
-
-.k-govde{flex:1;padding:18px;overflow-y:auto;display:flex;flex-direction:column;}
-.k-not{font-size:1.2rem;line-height:1.8;color:#4a3520;background:white;padding:16px;border-radius:12px;border-left:5px solid #D4860A;margin-bottom:16px;flex:1;}
-.k-bos-not{font-size:1.1rem;color:#9e8060;font-style:italic;background:white;padding:16px;border-radius:12px;margin-bottom:16px;flex:1;}
-
-.k-istatlar{display:flex;gap:12px;margin-bottom:16px;}
-.k-stat{flex:1;background:white;border-radius:12px;padding:14px;text-align:center;box-shadow:0 1px 6px rgba(0,0,0,.08);}
-.k-stat-sayi{font-size:2rem;font-weight:800;color:#D4860A;}
-.k-stat-lbl{font-size:.85rem;color:#6B4C2A;text-transform:uppercase;letter-spacing:.06em;margin-top:2px;}
-
-.k-medya{display:flex;gap:10px;margin-bottom:14px;margin-top:auto;}
-.k-chip{flex:1;background:white;border-radius:10px;padding:12px 8px;text-align:center;box-shadow:0 1px 6px rgba(0,0,0,.08);}
-.k-chip-ikon{font-size:1.5rem;}
-.k-chip-sayi{font-size:1.4rem;font-weight:800;color:#D4860A;}
-.k-chip-lbl{font-size:.78rem;color:#6B4C2A;margin-top:2px;}
-.k-chip.aktif{background:rgba(212,134,10,.1);border:2px solid #D4860A;}
-
-.k-btns{display:flex;gap:10px;padding:0 0 12px;}
-.k-btn{flex:1;padding:16px;border:none;border-radius:12px;font-size:1.05rem;font-weight:700;cursor:pointer;}
-.k-btn-duzenle{background:#D4860A;color:white;}
-.k-btn-duzenle:active{background:#F5B942;}
-.k-btn-detay{background:#2D5016;color:white;}
-.k-btn-detay:active{background:#4A7C23;}
-
-.k-qr{display:flex;justify-content:center;padding:8px 0 16px;}
-.k-qr-inner{background:white;padding:10px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.1);}
-
-/* Kaydır ipucu */
-.kaydir-ipucu{text-align:center;padding:8px;color:rgba(100,70,40,.4);font-size:.85rem;}
-
-/* ── BOŞ EKRAN ── */
-.bos-ekran{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;background:#FFF8E7;}
-.bos-ikon{font-size:5rem;margin-bottom:20px;}
-.bos-yazi{font-size:1.5rem;font-weight:700;color:#3D2B1A;margin-bottom:10px;text-align:center;}
-.bos-alt{font-size:1.1rem;color:#6B4C2A;text-align:center;}
-
-/* ── OVERLAY & MODAL ── */
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:flex-end;}
-.overlay.open{display:flex;}
-.modal{background:#FFFCF4;border-radius:22px 22px 0 0;width:100%;max-height:92vh;overflow-y:auto;}
-.m-head{background:#3D2B1A;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;border-radius:22px 22px 0 0;position:sticky;top:0;z-index:10;}
-.m-title{font-size:1.3rem;font-weight:700;color:#F5B942;}
-.m-kapat{background:none;border:none;color:rgba(255,248,231,.6);font-size:1.6rem;cursor:pointer;}
-.m-body{padding:20px;}
-.m-foot{padding:16px 20px;border-top:1px solid #F0E4C0;display:flex;gap:10px;position:sticky;bottom:0;background:#FFFCF4;}
-
-/* FORM */
-.fg{margin-bottom:16px;}
-.fg label{display:block;font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#6B4C2A;margin-bottom:6px;}
-.fi{width:100%;padding:14px 15px;border:2px solid #F0E4C0;border-radius:12px;font-size:1.1rem;background:white;color:#3D2B1A;}
-.fi:focus{outline:none;border-color:#D4860A;}
-textarea.fi{resize:vertical;min-height:100px;}
-.f2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
-.secbtn{flex:1;padding:15px;border:none;border-radius:12px;font-size:1.05rem;font-weight:700;cursor:pointer;}
-.btn-kaydet{background:#D4860A;color:white;}
-.btn-iptal{background:#F0E4C0;color:#6B4C2A;}
-.btn-kaydet:active{background:#F5B942;}
-
-/* QR KUTU */
-.qr-kutu{background:#FFF8E7;border:2px solid #F0E4C0;border-radius:14px;padding:18px;text-align:center;margin-bottom:18px;}
-.qr-kutu p{font-size:1rem;color:#6B4C2A;margin-bottom:12px;}
-#qrDisplay{display:flex;justify-content:center;margin:10px 0;}
-#qrDisplay canvas,#qrDisplay img{border:5px solid white;box-shadow:0 3px 14px rgba(0,0,0,.12);}
-.btn-qr{background:#2D5016;color:white;border:none;padding:13px 24px;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:8px;}
-
-/* SES KUTU */
-.ses-kutu{background:linear-gradient(135deg,#1a0a0a,#2d1a0a);border-radius:14px;padding:18px;margin-bottom:18px;border:2px solid rgba(212,134,10,.3);}
-.ses-bas{color:#F5B942;font-size:1.2rem;font-weight:800;margin-bottom:4px;}
-.ses-alt{font-size:.9rem;color:rgba(255,248,231,.4);margin-bottom:16px;}
-.ses-ctrl{display:flex;align-items:center;gap:16px;}
-.rec-btn{width:72px;height:72px;border-radius:50%;background:#C62828;border:3px solid rgba(255,255,255,.2);color:white;font-size:1.8rem;cursor:pointer;flex-shrink:0;}
-.rec-btn.kayit{animation:puls 1.2s infinite;background:#B71C1C;}
-@keyframes puls{0%{box-shadow:0 0 0 0 rgba(211,47,47,.7)}70%{box-shadow:0 0 0 18px rgba(211,47,47,0)}100%{box-shadow:0 0 0 0 rgba(211,47,47,0)}}
-.ses-info .lbl{font-size:.85rem;color:rgba(255,248,231,.5);text-transform:uppercase;letter-spacing:.06em;}
-.ses-info .sure{font-size:2.4rem;font-weight:800;color:#F5B942;font-variant-numeric:tabular-nums;}
-.ses-info .sure.aktif{color:#EF9A9A;}
-.dalga{width:100%;height:50px;background:rgba(0,0,0,.3);border-radius:10px;margin-top:14px;overflow:hidden;}
-#waveCanvas{width:100%;height:50px;display:block;}
-.ses-listesi{margin-top:14px;display:flex;flex-direction:column;gap:10px;}
-.ses-ogesi{background:rgba(255,255,255,.08);border:1px solid rgba(212,134,10,.25);border-radius:12px;padding:14px;}
-.ses-oge-ust{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
-.ses-oge-ad{font-size:1rem;color:rgba(255,248,231,.85);font-weight:600;}
-.ses-oge-meta{font-size:.85rem;color:rgba(255,248,231,.4);}
-.ses-oynat-btn{width:56px;height:56px;border-radius:50%;background:#D4860A;border:none;color:white;font-size:1.6rem;cursor:pointer;flex-shrink:0;}
-.ses-oynat-btn:active{background:#F5B942;}
-.ses-sil-btn{background:none;border:none;color:rgba(239,154,154,.7);font-size:1.2rem;cursor:pointer;padding:4px 8px;}
-
-/* DOSYA & LİNK */
-.upload-btn{width:100%;padding:18px;border:2px dashed #F0E4C0;border-radius:14px;background:white;font-size:1.05rem;color:#6B4C2A;cursor:pointer;margin-bottom:12px;text-align:center;}
-.upload-btn:active{border-color:#D4860A;background:rgba(212,134,10,.04);}
-.dosya-ogesi{background:white;border:2px solid #F0E4C0;border-radius:12px;padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:10px;}
-.dosya-ikon{width:50px;height:50px;background:#3D2B1A;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;}
-.dosya-ad{font-size:1rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.dosya-boyut{font-size:.85rem;color:#6B4C2A;}
-.dosya-sil{background:none;border:none;color:#C62828;font-size:1.2rem;cursor:pointer;}
-.link-satir{display:flex;gap:8px;margin-bottom:10px;}
-.link-ekle-btn{background:#D4860A;color:white;border:none;padding:14px 18px;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;white-space:nowrap;}
-.link-ogesi{background:#FFF8E7;border:2px solid #F0E4C0;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:8px;}
-.link-et{font-size:.9rem;flex-shrink:0;}
-.link-url{font-size:.9rem;color:#1a73e8;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:underline;}
-.link-sil{background:none;border:none;color:#C62828;font-size:1.1rem;cursor:pointer;}
-
-/* DETAY MODAL */
-.detay-not{font-size:1.15rem;line-height:1.8;color:#4a3520;background:#FFF8E7;padding:16px;border-radius:12px;border-left:5px solid #D4860A;margin-bottom:16px;}
-.detay-istat{flex:1;background:white;border-radius:12px;padding:14px;text-align:center;}
-.detay-istat-sayi{font-size:1.8rem;font-weight:800;color:#D4860A;}
-.detay-istat-lbl{font-size:.82rem;color:#6B4C2A;text-transform:uppercase;}
-.detay-ses-ogesi{background:#FFF8E7;border:2px solid #F0E4C0;border-radius:12px;padding:14px;margin-bottom:10px;}
-.detay-ses-ad{font-size:1rem;font-weight:700;color:#3D2B1A;margin-bottom:10px;}
-.detay-oynat{display:flex;align-items:center;gap:12px;}
-.detay-oynat-btn{width:60px;height:60px;border-radius:50%;background:#D4860A;border:none;color:white;font-size:1.7rem;cursor:pointer;flex-shrink:0;}
-.detay-link-ogesi{background:#FFF8E7;border:2px solid #F0E4C0;border-radius:10px;padding:14px;margin-bottom:8px;}
-.detay-link-ogesi a{font-size:1rem;color:#1a73e8;text-decoration:underline;word-break:break-all;}
-
-/* QR TARAYICI */
-.qr-video-wrap{position:relative;width:100%;border-radius:14px;overflow:hidden;background:#000;margin-bottom:16px;}
-#qrVideo{width:100%;display:block;}
-#qrCanvas{display:none;}
-.qr-status{text-align:center;font-size:1rem;color:#6B4C2A;padding:10px 0 16px;}
-
-/* VERİ */
-.veri-kart{background:#FFF8E7;border:2px solid #F0E4C0;border-radius:14px;padding:18px;margin-bottom:14px;}
-.veri-bas{font-size:1.1rem;font-weight:800;color:#3D2B1A;margin-bottom:6px;}
-.veri-alt{font-size:.95rem;color:#6B4C2A;line-height:1.6;margin-bottom:14px;}
-.veri-btn{width:100%;padding:15px;border:none;border-radius:12px;font-size:1.05rem;font-weight:700;cursor:pointer;}
-.vb-export{background:#2D5016;color:white;}
-.vb-import{background:#D4860A;color:white;}
-
-/* BÖLÜM BAŞLIĞI */
-.bolum{font-size:.85rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#6B4C2A;border-bottom:2px solid #F0E4C0;padding-bottom:8px;margin-bottom:14px;}
-
-/* TOAST */
-#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#2D5016;color:white;padding:12px 26px;border-radius:28px;font-size:1rem;font-weight:700;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.3);}
+  /* DETAY */
+  .detail-audio-list{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
+  .detail-audio-item{background:var(--wax);border:1px solid var(--wax-dark);border-radius:6px;padding:10px 12px;}
+  .detail-audio-name{font-size:.78rem;color:var(--bark-mid);margin-bottom:6px;}
+  .detail-audio-item audio{width:100%;height:32px;}
+  .detail-drive-links{margin-top:10px;display:flex;flex-direction:column;gap:6px;}
+  .detail-drive-link{background:var(--wax);border:1px solid var(--wax-dark);border-radius:4px;padding:8px 12px;font-size:.82rem;}
+  .detail-drive-link a{color:#1a73e8;text-decoration:none;}
+  .detail-drive-link a:hover{text-decoration:underline;}
+  .detail-qr{display:flex;justify-content:center;padding:20px 0 8px;}
+  .empty-state{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--bark-mid);}
+  .empty-state .bee{font-size:3rem;margin-bottom:12px;}
+  .empty-state p{font-style:italic;}
+  @media(max-width:600px){.form-row-2{grid-template-columns:1fr;}.stats-bar{flex-wrap:wrap;}header{padding:16px;}.logo{font-size:1.3rem;}.drive-input-row{flex-direction:column;}}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<div class="hdr">
-  <div class="hdr-logo">🐝 Rıza Kaptan<small>KOVAN TAKİP</small></div>
-  <div class="hdr-btns">
-    <button class="hbtn" onclick="openQR()" title="QR Tara">📷</button>
-    <button class="hbtn" onclick="openVeri()" title="Veri">⚙️</button>
-    <button class="hbtn hbtn-ana" onclick="openForm()">+ Kovan</button>
+<header>
+  <div>
+    <div class="logo">🐝 Rıza Kaptan <span>Arı Çiftliği</span></div>
+    <div class="header-sub">Rıza Kaptan Arı Çiftliği</div>
   </div>
-</div>
-
-<!-- SAYAÇ & NAV -->
-<div class="sayac" id="sayacBar"></div>
-
-<!-- KOVAN SLIDES -->
-<div class="slide-wrap">
-  <div class="slides" id="slides"></div>
-</div>
-
-<!-- FORM MODAL -->
-<div class="overlay" id="formOverlay" onclick="if(event.target===this)kapat('formOverlay')">
-<div class="modal">
-  <div class="m-head">
-    <div class="m-title" id="formBaslik">Yeni Kovan</div>
-    <button class="m-kapat" onclick="kapat('formOverlay')">✕</button>
+  <div style="display:flex;gap:10px;align-items:center;">
+    <button class="btn-qr-scan" onclick="openQRScanner()" title="QR Tara">📷 QR Tara</button>
+    <button class="btn-add" onclick="openNewModal()">+ Yeni Kovan</button>
   </div>
-  <div class="m-body">
-    <div class="fg"><label>Kovan Adı</label><input class="fi" id="fAd" placeholder="örn. K-01, Bahçe Kovani..." oninput="zamanla()"></div>
-    <div class="fg"><label>Durum</label>
-      <select class="fi" id="fDurum" onchange="zamanla()">
-        <option value="iyi">✅ İyi Durumda</option>
-        <option value="orta">⚠️ Orta</option>
-        <option value="zayif">❌ Zayıf</option>
-      </select>
-    </div>
-    <div class="fg"><label>Not / Gözlem</label><textarea class="fi" id="fNot" placeholder="Gözlemlerinizi yazın..." oninput="zamanla()"></textarea></div>
-    <div class="f2">
-      <div class="fg" style="margin:0"><label>Çerçeve</label><input class="fi" id="fCerceve" type="number" placeholder="8" oninput="zamanla()"></div>
-      <div class="fg" style="margin:0"><label>Bal (kg)</label><input class="fi" id="fBal" type="number" step="0.1" placeholder="12.5" oninput="zamanla()"></div>
-    </div>
+</header>
 
-    <div class="bolum">📱 QR Kod</div>
-    <div class="qr-kutu">
-      <p>Bu QR kodu yazdırıp kovana yapıştırın</p>
-      <div id="qrDisplay"></div>
-      <button class="btn-qr" onclick="qrIndir()">⬇ QR Kodu İndir</button>
-    </div>
+<main>
+  <div class="stats-bar" id="statsBar"></div>
+  <div class="grid" id="kovanGrid"></div>
+</main>
 
-    <div class="bolum">🎙️ Sesli Not</div>
-    <div class="ses-kutu">
-      <div class="ses-bas">Mikrofon ile Kayıt</div>
-      <div class="ses-alt">Sahada konuş — otomatik bu kovana kaydedilir</div>
-      <div class="ses-ctrl">
-        <button class="rec-btn" id="recBtn" onclick="sesBaslat()">🎙️</button>
-        <div class="ses-info">
-          <div class="lbl" id="sesLbl">Hazır</div>
-          <div class="sure" id="sesSure">00:00</div>
+<!-- EKLE / DÜZENLE MODAL -->
+<div class="overlay" id="editOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Yeni Kovan Ekle</div>
+      <button class="btn-close" onclick="closeModal('editOverlay')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row-2">
+        <div class="form-row" style="margin:0">
+          <label>Kovan Adı / Numarası</label>
+          <input type="text" id="fName" placeholder="örn. K-01, Bahçe Kovani..." oninput="scheduleAutoSave()">
+        </div>
+        <div class="form-row" style="margin:0">
+          <label>Durum</label>
+          <select id="fStatus" onchange="autoSave()">
+            <option value="iyi">✅ İyi</option>
+            <option value="orta">⚠️ Orta</option>
+            <option value="zayif">❌ Zayıf</option>
+          </select>
         </div>
       </div>
-      <div class="dalga"><canvas id="waveCanvas"></canvas></div>
-      <div class="ses-listesi" id="sesListesi"></div>
-    </div>
+      <div class="form-row" style="margin-top:18px">
+        <label>Not / Gözlem</label>
+        <textarea id="fNote" placeholder="Kovan hakkında gözlemlerinizi yazın..." oninput="scheduleAutoSave()"></textarea>
+      </div>
+      <div class="form-row-2">
+        <div class="form-row" style="margin:0"><label>Çerçeve Sayısı</label><input type="text" id="fFrames" placeholder="örn. 8" oninput="scheduleAutoSave()"></div>
+        <div class="form-row" style="margin:0"><label>Bal Verimi (kg)</label><input type="text" id="fYield" placeholder="örn. 12.5" oninput="scheduleAutoSave()"></div>
+      </div>
 
-    <div class="bolum">🎬 Video & Fotoğraf</div>
-    <button class="upload-btn" onclick="document.getElementById('dosyaGirdi').click()">
-      📁 Galeriden video veya fotoğraf seç
-    </button>
-    <input type="file" id="dosyaGirdi" accept="video/*,image/*" multiple style="display:none" onchange="dosyaEkle(event)">
-    <div id="dosyaListesi"></div>
+      <!-- QR -->
+      <div class="qr-section">
+        <h4>📱 QR Kod</h4>
+        <p>Bu QR kodu yazdırıp kovana yapıştırın. Telefonla okutunca kovan bilgileri açılır.</p>
+        <div id="qrDisplay"></div>
+        <button class="btn-dl" onclick="downloadQR()">⬇ QR Kodu İndir</button>
+      </div>
 
-    <div class="bolum">🔗 Drive & Video Linkleri</div>
-    <div class="link-satir">
-      <input class="fi" id="linkGirdi" placeholder="https://drive.google.com/..." type="url" style="flex:1">
-      <button class="link-ekle-btn" onclick="linkEkle()">+ Ekle</button>
+      <!-- SES KAYIT -->
+      <div class="section-divider">Sesli Not Kaydet</div>
+      <div class="audio-section">
+        <div class="audio-section-title">🎙️ Mikrofon ile Kayıt</div>
+        <div class="audio-section-sub">Sahada telefonuna konuş — kayıt bu kovana kaydedilir</div>
+        <div class="rec-controls">
+          <button class="btn-rec" id="btnRec" onclick="startRecording()" title="Kayda Başla">🎙️</button>
+          <button class="btn-stop" id="btnStop" onclick="stopRecording()" disabled title="Durdur">⏹</button>
+          <div class="rec-status">
+            <div class="rec-label" id="recLabel">Hazır</div>
+            <div class="rec-timer" id="recTimer">00:00</div>
+          </div>
+        </div>
+        <div class="waveform-wrap"><canvas id="waveCanvas"></canvas></div>
+        <div class="audio-list" id="audioList"></div>
+      </div>
+
+
+      <!-- VİDEO YÜKLE -->
+      <div class="section-divider">Video &amp; Fotoğraf Yükle</div>
+      <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()" style="border:2px dashed var(--wax-dark);border-radius:8px;padding:24px;text-align:center;cursor:pointer;margin-bottom:10px;transition:all .2s;">
+        <input type="file" id="fileInput" accept="video/*,image/*" multiple style="display:none" onchange="handleFiles(event)">
+        <div style="font-size:2rem;margin-bottom:8px">🎬</div>
+        <div style="font-size:.85rem;color:var(--bark-mid)">Galeriden video veya fotoğraf seç</div>
+        <div style="font-size:.72rem;color:var(--bark-mid);margin-top:4px">MP4, MOV, JPG, PNG desteklenir</div>
+      </div>
+      <div id="fileList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px"></div>
+
+      <!-- DRIVE LİNKLERİ -->
+      <div class="section-divider">Google Drive / Video Linkleri</div>
+      <div class="drive-section">
+        <div class="drive-header">
+          <div style="font-size:1.3rem">📁</div>
+          <div>
+            <div class="drive-title">Video & Dosya Linkleri</div>
+            <div class="drive-sub">Google Drive, YouTube, Dropbox veya herhangi bir link ekleyin</div>
+          </div>
+        </div>
+        <div class="drive-input-row">
+          <input type="text" id="driveLinkInput" placeholder="https://drive.google.com/... veya başka link">
+          <button class="btn-drive-add" onclick="addDriveLink()">+ Ekle</button>
+        </div>
+        <div class="drive-links" id="driveLinksList"></div>
+      </div>
     </div>
-    <div id="linkListesi"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal('editOverlay')">İptal</button>
+      <button class="btn-save" onclick="saveKovan()">💾 Kaydet</button>
+    </div>
   </div>
-  <div class="m-foot">
-    <button class="secbtn btn-iptal" onclick="kapat('formOverlay')">İptal</button>
-    <button class="secbtn btn-kaydet" onclick="kaydet()">💾 Kaydet</button>
-  </div>
-</div>
 </div>
 
 <!-- DETAY MODAL -->
-<div class="overlay" id="detayOverlay" onclick="if(event.target===this)kapat('detayOverlay')">
-<div class="modal">
-  <div class="m-head">
-    <div class="m-title" id="detayBaslik">Kovan Detayı</div>
-    <button class="m-kapat" onclick="kapat('detayOverlay')">✕</button>
-  </div>
-  <div class="m-body" id="detayIcerik"></div>
-  <div class="m-foot">
-    <button class="secbtn btn-iptal" style="background:#FFEBEE;color:#C62828;" onclick="silOnay()">🗑 Sil</button>
-    <button class="secbtn btn-kaydet" onclick="duzenle()">✏️ Düzenle</button>
-  </div>
-</div>
-</div>
-
-<!-- QR TARAYICI -->
-<div class="overlay" id="qrOverlay" onclick="if(event.target===this)qrKapat()">
-<div class="modal">
-  <div class="m-head">
-    <div class="m-title">📷 QR Kodu Tara</div>
-    <button class="m-kapat" onclick="qrKapat()">✕</button>
-  </div>
-  <div class="m-body">
-    <p style="font-size:1.05rem;color:#6B4C2A;margin-bottom:14px;text-align:center;">Kamerayı kovandaki QR koda tut</p>
-    <div class="qr-video-wrap"><video id="qrVideo" playsinline autoplay muted></video><canvas id="qrCanvas"></canvas></div>
-    <div class="qr-status" id="qrStatus">● Kamera açılıyor...</div>
-    <button class="secbtn btn-iptal" style="width:100%" onclick="qrKapat()">Kapat</button>
-  </div>
-</div>
-</div>
-
-<!-- VERİ YÖNETİMİ -->
-<div class="overlay" id="veriOverlay" onclick="if(event.target===this)kapat('veriOverlay')">
-<div class="modal">
-  <div class="m-head">
-    <div class="m-title">⚙️ Veri Yönetimi</div>
-    <button class="m-kapat" onclick="kapat('veriOverlay')">✕</button>
-  </div>
-  <div class="m-body">
-    <div class="veri-kart">
-      <div class="veri-bas">📤 Veriyi Dışa Aktar</div>
-      <div class="veri-alt">Tüm kovan verilerini JSON dosyası olarak indir. Yedek almak veya başka cihaza taşımak için kullan.</div>
-      <button class="veri-btn vb-export" onclick="veriExport()">⬇️ Veriyi İndir (JSON)</button>
+<div class="overlay" id="detailOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="detailTitle">Kovan Detayı</div>
+      <button class="btn-close" onclick="closeModal('detailOverlay')">✕</button>
     </div>
-    <div class="veri-kart">
-      <div class="veri-bas">📥 Veriyi İçe Aktar</div>
-      <div class="veri-alt">JSON dosyasını yükle. <strong style="color:#C62828">Mevcut veriler silinmez, üstüne eklenir.</strong></div>
-      <input type="file" id="importGirdi" accept=".json" style="display:none" onchange="veriImport(event)">
-      <button class="veri-btn vb-import" onclick="document.getElementById('importGirdi').click()">⬆️ JSON Dosyası Seç</button>
-      <div id="importSonuc" style="margin-top:10px;font-size:1rem;text-align:center;font-weight:600;"></div>
+    <div class="modal-body" id="detailBody"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="editCurrentKovan()" style="background:var(--wax);border-color:var(--honey);color:var(--honey-dark)">✏️ Düzenle</button>
+      <button class="btn-cancel" onclick="closeModal('detailOverlay')">Kapat</button>
     </div>
   </div>
 </div>
+
+
+<!-- QR TARAYICI MODAL -->
+<div class="overlay" id="qrScanOverlay">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <div class="modal-title">📷 QR Kodu Tara</div>
+      <button class="btn-close" onclick="closeQRScanner()">✕</button>
+    </div>
+    <div class="modal-body" style="padding:20px;text-align:center;">
+      <p style="font-size:.85rem;color:var(--bark-mid);margin-bottom:16px;">
+        Kamerayı kovandaki QR koda doğrult. Otomatik olarak o kovanın bilgileri açılır.
+      </p>
+      <div style="position:relative;width:100%;max-width:340px;margin:0 auto;border-radius:12px;overflow:hidden;background:#000;">
+        <video id="qrVideo" style="width:100%;display:block;" playsinline autoplay muted></video>
+        <canvas id="qrCanvas" style="display:none;"></canvas>
+        <!-- Tarama çerçevesi -->
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;">
+          <div style="width:200px;height:200px;border:3px solid var(--honey-light);border-radius:8px;box-shadow:0 0 0 9999px rgba(0,0,0,0.4);">
+            <div style="position:absolute;top:-3px;left:-3px;width:24px;height:24px;border-top:4px solid var(--honey-light);border-left:4px solid var(--honey-light);border-radius:4px 0 0 0;"></div>
+            <div style="position:absolute;top:-3px;right:-3px;width:24px;height:24px;border-top:4px solid var(--honey-light);border-right:4px solid var(--honey-light);border-radius:0 4px 0 0;"></div>
+            <div style="position:absolute;bottom:-3px;left:-3px;width:24px;height:24px;border-bottom:4px solid var(--honey-light);border-left:4px solid var(--honey-light);border-radius:0 0 0 4px;"></div>
+            <div style="position:absolute;bottom:-3px;right:-3px;width:24px;height:24px;border-bottom:4px solid var(--honey-light);border-right:4px solid var(--honey-light);border-radius:0 0 4px 0;"></div>
+          </div>
+        </div>
+      </div>
+      <div id="qrScanStatus" style="margin-top:16px;font-size:.85rem;color:var(--bark-mid);">
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;">
+          <div id="qrDot" style="width:10px;height:10px;border-radius:50%;background:var(--honey);animation:pulse-rec 1.2s infinite;"></div>
+          Kamera açılıyor...
+        </div>
+      </div>
+      <button onclick="closeQRScanner()" class="btn-cancel" style="margin-top:16px;">İptal</button>
+    </div>
+  </div>
 </div>
 
-<div id="toast"></div>
+<!-- PWA KURULUM BANNER -->
+<div id="installBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#3D2B1A;color:#FFF8E7;padding:14px 20px;z-index:999;align-items:center;gap:12px;box-shadow:0 -4px 20px rgba(0,0,0,.4);">
+  <div style="font-size:1.5rem">🍯</div>
+  <div style="flex:1">
+    <div style="font-family:'Playfair Display',serif;font-size:.95rem;color:#F5B942">Rıza Kaptan Arı Çiftliği</div>
+    <div style="font-size:.75rem;color:rgba(255,248,231,.6);margin-top:2px">Kovan takip uygulamanız</div>
+  </div>
+  <button id="btnInstall" style="background:#D4860A;color:white;border:none;padding:8px 16px;border-radius:4px;font-family:'Source Serif 4',serif;font-size:.85rem;cursor:pointer;">Kur</button>
+  <button id="btnInstallClose" style="background:none;border:none;color:rgba(255,248,231,.5);font-size:1.2rem;cursor:pointer;padding:4px 8px;">✕</button>
+</div>
 
 <script>
-// ── VERİ ──────────────────────────────────────────────────────────────────
 let kovanlar = [];
-try { kovanlar = JSON.parse(localStorage.getItem('kovanlar')||'[]'); } catch(e) {}
+try { kovanlar = JSON.parse(localStorage.getItem('kovanlar')||'[]'); } catch(e) { kovanlar=[]; }
 
-// Eski format uyumluluğu
-kovanlar = kovanlar.map(k => ({
-  ...k,
-  ad: k.ad || k.name || 'İsimsiz',
-  sesler: k.sesler || (k.audios||[]).map(a=>({id:a.id||uid(),ad:a.name||a.etiket||'Kayıt',dataUrl:a.dataUrl,sure:a.duration||a.sureSniye||0,boyut:a.size||0})),
-  dosyalar: k.dosyalar || k.files || [],
-  linkler: k.linkler || k.links || [],
-  tarih: k.tarih || k.date || ''
-}));
+let editingId=null, pendingAudios=[], pendingLinks=[], pendingFiles=[], currentQrKovanId=null, detailKovanId=null;
+let mediaRecorder=null, audioChunks=[], recInterval=null, recSeconds=0;
+let audioCtx=null, analyser=null, waveAnimId=null, micStream=null;
 
-let editId=null, qrId=null, detayId=null;
-let sesler=[], dosyalar=[], linkler=[];
-let mediaRec=null, sesChunks=[], recSn=0, recTimer=null;
-let audioCtx=null, analyser=null, waveAnim=null, micStream=null;
-let autoTimer=null;
+function render(){ renderStats(); renderGrid(); }
 
-// ── RENDER ────────────────────────────────────────────────────────────────
-function render() {
-  const slides = document.getElementById('slides');
-  const sayac = document.getElementById('sayacBar');
-  const n = kovanlar.length;
+function renderStats(){
+  const total=kovanlar.length;
+  const iyi=kovanlar.filter(k=>k.status==='iyi').length;
+  const ac=kovanlar.reduce((s,k)=>s+(k.audios||[]).length+(k.links||[]).length+(k.files||[]).length,0);
+  document.getElementById('statsBar').innerHTML=`
+    <div class="stat"><div class="stat-num">${total}</div><div class="stat-label">Toplam Kovan</div></div>
+    <div class="stat"><div class="stat-num" style="color:var(--forest)">${iyi}</div><div class="stat-label">İyi Durumda</div></div>
+    <div class="stat"><div class="stat-num">${ac}</div><div class="stat-label">Ses, Video & Link</div></div>`;
+}
 
-  sayac.innerHTML = n > 0
-    ? `<span class="sayac-bilgi">📋 ${n} kovan — yukarı/aşağı kaydır</span>
-       <div class="sayac-nav">
-         <button class="nav-btn" onclick="ilkKovan()" title="Başa git">⏫</button>
-       </div>`
-    : `<span class="sayac-bilgi" style="color:rgba(245,185,66,.5)">Henüz kovan eklenmedi</span>`;
-
-  if (!n) {
-    slides.innerHTML = `<div class="bos-ekran">
-      <div class="bos-ikon">🐝</div>
-      <div class="bos-yazi">Henüz kovan eklenmedi</div>
-      <div class="bos-alt">Sağ üstteki + Kovan butonuna basın</div>
-    </div>`;
+function renderGrid(){
+  const grid=document.getElementById('kovanGrid');
+  if(!kovanlar.length){
+    grid.innerHTML=`<div class="empty-state"><div class="bee">🐝</div><p>Henüz kovan eklenmedi.<br>Sağ üstten yeni kovan ekleyin.</p></div>`;
     return;
   }
-
-  slides.innerHTML = kovanlar.map((k,i) => {
-    const dc = k.durum==='iyi'?'d-iyi':k.durum==='orta'?'d-orta':'d-zayif';
-    const dl = k.durum==='iyi'?'✅ İyi Durumda':k.durum==='orta'?'⚠️ Orta':'❌ Zayıf';
-    const sc=(k.sesler||[]).length, dc2=(k.dosyalar||[]).length, lc=(k.linkler||[]).length;
-    return `<div class="kovan-slide" id="slide_${k.id}">
-      <div class="k-ust">
-        <div class="k-ad">${esc(k.ad)}</div>
-        <div class="k-tarih">${k.tarih||''}</div>
-        <div class="k-durum ${dc}">${dl}</div>
+  grid.innerHTML=kovanlar.map(k=>{
+    const sc=`status-${k.status}`;
+    const sl={iyi:'İyi Durumda',orta:'Orta',zayif:'Zayıf'}[k.status];
+    const ac=(k.audios||[]).length, lc=(k.links||[]).length;
+    return `<div class="kovan-card" onclick="openDetail('${k.id}')">
+      <div class="kovan-top"><div class="kovan-id">${esc(k.name)}</div><div class="kovan-date">${k.date}</div></div>
+      <div class="kovan-body">
+        <div class="status-badge ${sc}">${sl}</div>
+        <div class="kovan-note">${esc(k.note||'Not eklenmemiş...')}</div>
       </div>
-      <div class="k-govde">
-        ${k.not
-          ? `<div class="k-not">${esc(k.not)}</div>`
-          : `<div class="k-bos-not">Not eklenmemiş...</div>`}
-        ${k.cerceve||k.bal ? `<div class="k-istatlar">
-          ${k.cerceve?`<div class="k-stat"><div class="k-stat-sayi">${k.cerceve}</div><div class="k-stat-lbl">Çerçeve</div></div>`:''}
-          ${k.bal?`<div class="k-stat"><div class="k-stat-sayi">${k.bal}</div><div class="k-stat-lbl">kg Bal</div></div>`:''}
-        </div>`:''}
-        <div class="k-medya">
-          <div class="k-chip${sc>0?' aktif':''}">
-            <div class="k-chip-ikon">🎙️</div>
-            <div class="k-chip-sayi">${sc}</div>
-            <div class="k-chip-lbl">Ses</div>
-          </div>
-          <div class="k-chip${dc2>0?' aktif':''}">
-            <div class="k-chip-ikon">🎬</div>
-            <div class="k-chip-sayi">${dc2}</div>
-            <div class="k-chip-lbl">Video</div>
-          </div>
-          <div class="k-chip${lc>0?' aktif':''}">
-            <div class="k-chip-ikon">🔗</div>
-            <div class="k-chip-sayi">${lc}</div>
-            <div class="k-chip-lbl">Link</div>
-          </div>
-        </div>
-        <div class="k-btns">
-          <button class="k-btn k-btn-duzenle" onclick="openForm('${k.id}')">✏️ Düzenle</button>
-          <button class="k-btn k-btn-detay" onclick="openDetay('${k.id}')">📋 Detay & Ses</button>
-        </div>
-        <div class="k-qr"><div class="k-qr-inner" id="qr_${k.id}"></div></div>
-        ${i < kovanlar.length-1 ? '<div class="kaydir-ipucu">↓ sonraki kovan</div>' : '<div class="kaydir-ipucu">— son kovan —</div>'}
+      <div class="kovan-footer">
+        <div class="media-count"><b>${ac}</b> ses &nbsp;·&nbsp; <b>${lc}</b> link</div>
+        <div class="qr-mini" id="qrmini_${k.id}"></div>
       </div>
     </div>`;
   }).join('');
-
-  // QR kodları üret
-  kovanlar.forEach(k => {
-    const el = document.getElementById(`qr_${k.id}`);
-    if (el) { try { new QRCode(el,{text:`${loc()}?kovan=${k.id}`,width:140,height:140,correctLevel:QRCode.CorrectLevel.M}); } catch(e){} }
+  kovanlar.forEach(k=>{
+    const el=document.getElementById(`qrmini_${k.id}`);
+    if(el){el.innerHTML='';new QRCode(el,{text:`kovan:${k.id}`,width:36,height:36,correctLevel:QRCode.CorrectLevel.L});}
   });
 }
 
-function ilkKovan() {
-  document.getElementById('slides').scrollTo({top:0,behavior:'smooth'});
-}
-function loc() { return location.href.split('?')[0]; }
-
-// ── FORM ──────────────────────────────────────────────────────────────────
-function openForm(id) {
-  editId = id||null; sesler=[]; dosyalar=[]; linkler=[];
-  const k = id ? kovanlar.find(x=>x.id===id) : null;
-  document.getElementById('formBaslik').textContent = k ? 'Kovanı Düzenle' : 'Yeni Kovan';
-  document.getElementById('fAd').value = k?.ad||'';
-  document.getElementById('fDurum').value = k?.durum||'iyi';
-  document.getElementById('fNot').value = k?.not||'';
-  document.getElementById('fCerceve').value = k?.cerceve||'';
-  document.getElementById('fBal').value = k?.bal||'';
-  document.getElementById('linkGirdi').value = '';
-  if (k) { sesler=[...(k.sesler||[])]; dosyalar=[...(k.dosyalar||[])]; linkler=[...(k.linkler||[])]; }
-  qrId = id || uid();
-  qrUret(qrId);
-  renderSes(); renderDosya(); renderLink();
-  resetSes();
-  document.getElementById('formOverlay').classList.add('open');
+function openNewModal(){
+  editingId=null; pendingAudios=[]; pendingLinks=[]; pendingFiles=[];
+  document.getElementById('modalTitle').textContent='Yeni Kovan Ekle';
+  ['fName','fNote','fFrames','fYield'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fStatus').value='iyi';
+  document.getElementById('driveLinkInput').value='';
+  currentQrKovanId='K'+Date.now();
+  generateQR(currentQrKovanId);
+  renderAudioList(); renderDriveLinks(); renderFileList(); resetRecUI();
+  document.getElementById('editOverlay').classList.add('open');
 }
 
-function kapat(id) {
-  if (id==='formOverlay' && mediaRec?.state==='recording') sesDurdur();
+function openEdit(id){
+  const k=kovanlar.find(x=>x.id===id); if(!k) return;
+  editingId=id; pendingAudios=[...(k.audios||[])]; pendingLinks=[...(k.links||[])]; pendingFiles=[...(k.files||[])];
+  document.getElementById('modalTitle').textContent='Kovanı Düzenle';
+  document.getElementById('fName').value=k.name;
+  document.getElementById('fStatus').value=k.status;
+  document.getElementById('fNote').value=k.note||'';
+  document.getElementById('fFrames').value=k.frames||'';
+  document.getElementById('fYield').value=k.yield||'';
+  document.getElementById('driveLinkInput').value='';
+  currentQrKovanId=id;
+  generateQR(id); renderAudioList(); renderDriveLinks(); renderFileList(); resetRecUI();
+  document.getElementById('editOverlay').classList.add('open');
+}
+
+function closeModal(id){
+  if(mediaRecorder&&mediaRecorder.state==='recording') stopRecording();
+  // Sayfadan çıkmadan önce her zaman kaydet
+  if(id==='editOverlay') saveKovan(true);
   document.getElementById(id).classList.remove('open');
 }
 
-// ── QR ────────────────────────────────────────────────────────────────────
-function qrUret(id) {
+function generateQR(id){
   const el=document.getElementById('qrDisplay'); el.innerHTML='';
-  try { new QRCode(el,{text:`${loc()}?kovan=${id}`,width:190,height:190,correctLevel:QRCode.CorrectLevel.M}); } catch(e){}
+  new QRCode(el,{text:`${location.href.split('?')[0]}?kovan=${id}`,width:160,height:160,correctLevel:QRCode.CorrectLevel.M});
 }
-function qrIndir() {
-  const c=document.querySelector('#qrDisplay canvas'); if(!c) return;
-  const a=document.createElement('a');
-  a.download=`qr-${document.getElementById('fAd').value||'kovan'}.png`;
-  a.href=c.toDataURL(); a.click();
+function downloadQR(){
+  const canvas=document.querySelector('#qrDisplay canvas'); if(!canvas) return;
+  const k=editingId?kovanlar.find(x=>x.id===editingId):null;
+  const a=document.createElement('a'); a.download=`qr-${k?k.name:'kovan'}.png`; a.href=canvas.toDataURL(); a.click();
 }
 
-// ── SES ───────────────────────────────────────────────────────────────────
-async function sesBaslat() {
-  if (mediaRec?.state==='recording') { sesDurdur(); return; }
-  try { micStream = await navigator.mediaDevices.getUserMedia({audio:true}); }
-  catch(e) { toast('❌ Mikrofon izni gerekli'); return; }
-
-  audioCtx = new(window.AudioContext||window.webkitAudioContext)();
-  analyser = audioCtx.createAnalyser(); analyser.fftSize=256;
+/* ── SES KAYIT ── */
+async function startRecording(){
+  try{ micStream=await navigator.mediaDevices.getUserMedia({audio:true}); }
+  catch(e){ alert('Mikrofon izni gerekli. Lütfen tarayıcıda izin verin.'); return; }
+  audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  analyser=audioCtx.createAnalyser(); analyser.fftSize=256;
   audioCtx.createMediaStreamSource(micStream).connect(analyser);
-  dalgaCiz();
-
-  sesChunks=[];
-  const mime = ['audio/mp4','audio/webm;codecs=opus','audio/webm'].find(m=>MediaRecorder.isTypeSupported(m))||'';
-  mediaRec = mime ? new MediaRecorder(micStream,{mimeType:mime}) : new MediaRecorder(micStream);
-  mediaRec.ondataavailable = e => { if(e.data.size>0) sesChunks.push(e.data); };
-  mediaRec.onstop = sesTamamla;
-  mediaRec.start(100);
-
-  recSn=0;
-  recTimer=setInterval(()=>{ recSn++; sureyiGuncelle(); },1000);
-  document.getElementById('recBtn').classList.add('kayit');
-  document.getElementById('recBtn').textContent='⏹';
-  document.getElementById('sesLbl').textContent='● Kayıt yapılıyor';
-  document.getElementById('sesSure').classList.add('aktif');
+  drawWave();
+  audioChunks=[]; mediaRecorder=new MediaRecorder(micStream);
+  mediaRecorder.ondataavailable=e=>{if(e.data.size>0)audioChunks.push(e.data);};
+  mediaRecorder.onstop=finishRecording;
+  mediaRecorder.start();
+  recSeconds=0; recInterval=setInterval(()=>{recSeconds++;updateTimer();},1000);
+  document.getElementById('btnRec').classList.add('recording');
+  document.getElementById('btnRec').disabled=true;
+  document.getElementById('btnStop').disabled=false;
+  document.getElementById('recLabel').textContent='● Kayıt yapılıyor';
+  document.getElementById('recTimer').classList.add('active');
 }
 
-function sesDurdur() {
-  if (mediaRec?.state!=='inactive') mediaRec.stop();
-  micStream?.getTracks().forEach(t=>t.stop());
-  clearInterval(recTimer);
-  cancelAnimationFrame(waveAnim);
+function stopRecording(){
+  if(mediaRecorder&&mediaRecorder.state!=='inactive') mediaRecorder.stop();
+  micStream&&micStream.getTracks().forEach(t=>t.stop());
+  clearInterval(recInterval);
+  cancelAnimationFrame(waveAnimId);
   if(audioCtx){audioCtx.close();audioCtx=null;}
-  resetSes();
+  resetRecUI();
 }
 
-function sesTamamla() {
-  const mime=mediaRec?.mimeType||'audio/webm';
-  const blob=new Blob(sesChunks,{type:mime});
-  if(blob.size<200) return;
-  const r=new FileReader();
-  r.onload=ev=>{
+function finishRecording(){
+  const blob=new Blob(audioChunks,{type:'audio/webm'});
+  const reader=new FileReader();
+  reader.onload=ev=>{
     const now=new Date();
-    sesler.push({id:uid(),ad:`Kayıt ${now.toLocaleDateString('tr-TR')} ${now.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}`,dataUrl:ev.target.result,sure:recSn,boyut:blob.size});
-    renderSes(); otomatikKaydet();
+    const label=`Kayıt ${now.toLocaleDateString('tr-TR')} ${now.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})}`;
+    pendingAudios.push({name:label,dataUrl:ev.target.result,duration:recSeconds,size:blob.size});
+    renderAudioList();
+    autoSave(); // Ses kaydı biter bitmez kaydet
   };
-  r.readAsDataURL(blob);
+  reader.readAsDataURL(blob);
 }
 
-function resetSes() {
-  const b=document.getElementById('recBtn');
-  b.classList.remove('kayit'); b.textContent='🎙️';
-  document.getElementById('sesSure').textContent='00:00';
-  document.getElementById('sesSure').classList.remove('aktif');
-  document.getElementById('sesLbl').textContent='Hazır';
-  const c=document.getElementById('waveCanvas');
-  if(c) c.getContext('2d').clearRect(0,0,c.width,c.height);
+function resetRecUI(){
+  document.getElementById('btnRec').classList.remove('recording');
+  document.getElementById('btnRec').disabled=false;
+  document.getElementById('btnStop').disabled=true;
+  document.getElementById('recLabel').textContent='Hazır';
+  document.getElementById('recTimer').textContent='00:00';
+  document.getElementById('recTimer').classList.remove('active');
+  const canvas=document.getElementById('waveCanvas');
+  canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
 }
 
-function sureyiGuncelle() {
-  document.getElementById('sesSure').textContent=`${String(Math.floor(recSn/60)).padStart(2,'0')}:${String(recSn%60).padStart(2,'0')}`;
+function updateTimer(){
+  const m=String(Math.floor(recSeconds/60)).padStart(2,'0');
+  const s=String(recSeconds%60).padStart(2,'0');
+  document.getElementById('recTimer').textContent=`${m}:${s}`;
 }
 
-function dalgaCiz() {
-  const c=document.getElementById('waveCanvas');
-  c.width=c.offsetWidth||300; c.height=50;
-  const ctx=c.getContext('2d');
+function drawWave(){
+  const canvas=document.getElementById('waveCanvas');
+  canvas.width=canvas.offsetWidth||300; canvas.height=48;
+  const ctx=canvas.getContext('2d');
   const buf=new Uint8Array(analyser.frequencyBinCount);
   function loop(){
-    waveAnim=requestAnimationFrame(loop);
+    waveAnimId=requestAnimationFrame(loop);
     analyser.getByteTimeDomainData(buf);
-    ctx.clearRect(0,0,c.width,c.height);
-    ctx.strokeStyle='#F5B942';ctx.lineWidth=2.5;ctx.beginPath();
-    const sw=c.width/buf.length;let x=0;
-    for(let i=0;i<buf.length;i++){const y=(buf[i]/128)*c.height/2;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);x+=sw;}
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.strokeStyle='#F5B942'; ctx.lineWidth=2; ctx.beginPath();
+    const sw=canvas.width/buf.length; let x=0;
+    for(let i=0;i<buf.length;i++){
+      const y=(buf[i]/128.0)*(canvas.height/2);
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); x+=sw;
+    }
     ctx.stroke();
   }
   loop();
 }
 
-function renderSes() {
-  const el=document.getElementById('sesListesi'); if(!el) return;
-  el.innerHTML=sesler.map((s,i)=>`
-    <div class="ses-ogesi">
-      <div class="ses-oge-ust">
-        <div>
-          <div class="ses-oge-ad">🎙️ ${esc(s.ad)}</div>
-          <div class="ses-oge-meta">${sureFmt(s.sure)} · ${boyutFmt(s.boyut)}</div>
-        </div>
-        <button class="ses-sil-btn" onclick="sesSil(${i})">🗑</button>
+function renderAudioList(){
+  const list=document.getElementById('audioList');
+  if(!pendingAudios.length){list.innerHTML='';return;}
+  list.innerHTML=pendingAudios.map((a,i)=>`
+    <div class="audio-item">
+      <div class="audio-info">
+        <div class="audio-item-name">🎙️ ${esc(a.name)}</div>
+        <div class="audio-item-meta">${fmtTime(a.duration)} · ${fmtSize(a.size)}</div>
       </div>
-      <div style="display:flex;align-items:center;gap:12px;">
-        <button class="ses-oynat-btn" onclick="oynat(this,'fs${i}')">▶</button>
-        <audio id="fs${i}" src="${s.dataUrl}" style="flex:1;height:44px;"></audio>
-      </div>
+      <audio src="${a.dataUrl}" controls></audio>
+      <button class="btn-del-audio" onclick="removeAudio(${i})">🗑</button>
     </div>`).join('');
 }
-function sesSil(i){sesler.splice(i,1);renderSes();otomatikKaydet();}
+function removeAudio(i){pendingAudios.splice(i,1);renderAudioList();autoSave();}
 
-// ── OYNAT ─────────────────────────────────────────────────────────────────
-function oynat(btn, id) {
-  // Tüm diğer sesleri durdur
-  document.querySelectorAll('audio').forEach(a => { a.pause(); a.currentTime=0; });
-  document.querySelectorAll('.ses-oynat-btn,.detay-oynat-btn').forEach(b => b.textContent='▶');
-
-  const audio = document.getElementById(id);
-  if (!audio) { toast('Ses bulunamadı'); return; }
-
-  // Eğer zaten bu çalıyorsa durdur
-  if (!audio.paused) { audio.pause(); btn.textContent='▶'; return; }
-
-  // src kontrolü
-  if (!audio.src || audio.src === window.location.href) {
-    toast('Ses dosyası yüklenemedi'); return;
-  }
-
-  btn.textContent='⏸';
-  audio.onended = () => { btn.textContent='▶'; };
-  audio.onerror = () => { btn.textContent='▶'; toast('Ses çalınamadı'); };
-
-  // Android için: önce load, sonra play
-  audio.load();
-  const playPromise = audio.play();
-  if (playPromise !== undefined) {
-    playPromise.then(() => {
-      btn.textContent='⏸';
-    }).catch(err => {
-      console.log('Play error:', err);
-      btn.textContent='▶';
-      // Kullanıcıya alternatif sun
-      if (confirm('Ses otomatik açılamadı. İndirip dinlemek ister misiniz?')) {
-        const a = document.createElement('a');
-        a.href = audio.src;
-        a.download = 'ses-kaydi.webm';
-        a.click();
-      }
-    });
-  }
+/* ── DRIVE ── */
+function addDriveLink(){
+  const inp=document.getElementById('driveLinkInput');
+  const url=inp.value.trim(); if(!url) return;
+  if(!url.startsWith('http')){alert('Geçerli bir link girin.');return;}
+  const label=url.includes('drive.google.com')?'📁 Google Drive':
+    url.includes('youtube.com')||url.includes('youtu.be')?'▶️ YouTube':
+    url.includes('dropbox.com')?'📦 Dropbox':'🔗 Link';
+  pendingLinks.push({url,label}); inp.value=''; renderDriveLinks(); autoSave();
 }
-
-// ── DOSYA ─────────────────────────────────────────────────────────────────
-function dosyaEkle(e){
-  Array.from(e.target.files).forEach(f=>{
-    if(f.size>100*1024*1024){toast('Dosya çok büyük (max 100MB)');return;}
-    const r=new FileReader();
-    r.onload=ev=>{dosyalar.push({id:uid(),ad:f.name,boyut:f.size,tur:f.type.startsWith('video')?'video':'resim',dataUrl:ev.target.result});renderDosya();otomatikKaydet();};
-    r.readAsDataURL(f);
-  }); e.target.value='';
+function renderDriveLinks(){
+  const list=document.getElementById('driveLinksList');
+  if(!pendingLinks.length){list.innerHTML='';return;}
+  list.innerHTML=pendingLinks.map((l,i)=>`
+    <div class="drive-link-item">
+      <span>${l.label}</span>
+      <a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.url)}</a>
+      <button class="btn-del-link" onclick="removeLink(${i})">✕</button>
+    </div>`).join('');
 }
-function renderDosya(){
-  const el=document.getElementById('dosyaListesi'); if(!el) return;
-  el.innerHTML=dosyalar.map((d,i)=>`<div class="dosya-ogesi">
-    <div class="dosya-ikon">${d.tur==='video'?'🎬':'📸'}</div>
-    <div style="flex:1;min-width:0;"><div class="dosya-ad">${esc(d.ad)}</div><div class="dosya-boyut">${boyutFmt(d.boyut)}</div></div>
-    <button class="dosya-sil" onclick="dosyaSil(${i})">🗑</button>
-  </div>`).join('');
+function removeLink(i){pendingLinks.splice(i,1);renderDriveLinks();autoSave();}
+
+
+/* ── VİDEO DOSYA ── */
+function handleFiles(e){
+  const files=Array.from(e.target.files);
+  files.forEach(file=>{
+    if(file.size>50*1024*1024){alert(file.name+' çok büyük (max 50MB). Google Drive linki kullanın.');return;}
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      pendingFiles.push({name:file.name,size:file.size,dataUrl:ev.target.result,type:file.type});
+      renderFileList();
+      autoSave();
+    };
+    reader.readAsDataURL(file);
+  });
+  e.target.value='';
 }
-function dosyaSil(i){dosyalar.splice(i,1);renderDosya();otomatikKaydet();}
-
-// ── LİNK ──────────────────────────────────────────────────────────────────
-function linkEkle(){
-  const url=document.getElementById('linkGirdi').value.trim(); if(!url) return;
-  if(!url.startsWith('http')){toast('Geçerli bir link girin');return;}
-  const et=url.includes('drive.google.com')?'📁':url.includes('youtube')||url.includes('youtu.be')?'▶️':url.includes('dropbox')?'📦':'🔗';
-  linkler.push({id:uid(),url,etiket:et});
-  document.getElementById('linkGirdi').value='';
-  renderLink(); otomatikKaydet();
-}
-function renderLink(){
-  const el=document.getElementById('linkListesi'); if(!el) return;
-  el.innerHTML=linkler.map((l,i)=>`<div class="link-ogesi">
-    <span class="link-et">${l.etiket}</span>
-    <a class="link-url" href="${esc(l.url)}" target="_blank">${esc(l.url)}</a>
-    <button class="link-sil" onclick="linkSil(${i})">✕</button>
-  </div>`).join('');
-}
-function linkSil(i){linkler.splice(i,1);renderLink();otomatikKaydet();}
-
-// ── KAYDET ────────────────────────────────────────────────────────────────
-function zamanla(){clearTimeout(autoTimer);autoTimer=setTimeout(otomatikKaydet,800);}
-function otomatikKaydet(){if(document.getElementById('fAd')?.value.trim()) _kaydet(true);}
-function kaydet(){if(!document.getElementById('fAd').value.trim()){toast('Kovan adı zorunludur');return;}_kaydet(false);kapat('formOverlay');}
-
-function _kaydet(sessiz){
-  const ad=document.getElementById('fAd')?.value.trim(); if(!ad) return;
-  const tarih=new Date().toLocaleDateString('tr-TR');
-  const veri={
-    id:editId||qrId, ad,
-    durum:document.getElementById('fDurum').value,
-    not:document.getElementById('fNot').value,
-    cerceve:document.getElementById('fCerceve').value,
-    bal:document.getElementById('fBal').value,
-    sesler, dosyalar, linkler,
-    tarih:editId?(kovanlar.find(x=>x.id===editId)?.tarih||tarih):tarih,
-    guncelleme:tarih
-  };
-  if(editId){const idx=kovanlar.findIndex(x=>x.id===editId);if(idx>=0)kovanlar[idx]=veri;else kovanlar.unshift(veri);}
-  else{kovanlar.unshift(veri);editId=veri.id;}
-  try{localStorage.setItem('kovanlar',JSON.stringify(kovanlar));}catch(e){toast('⚠️ Depolama doldu!');}
-  render();
-  if(sessiz) toast('✓ Otomatik kaydedildi');
-}
-
-// ── DETAY ─────────────────────────────────────────────────────────────────
-function openDetay(id){
-  const k=kovanlar.find(x=>x.id===id); if(!k) return;
-  detayId=id;
-  document.getElementById('detayBaslik').textContent=k.ad;
-  const dc=k.durum==='iyi'?'d-iyi':k.durum==='orta'?'d-orta':'d-zayif';
-  const dl=k.durum==='iyi'?'✅ İyi Durumda':k.durum==='orta'?'⚠️ Orta':'❌ Zayıf';
-
-  const sesHtml=(k.sesler||[]).length?`
-    <div class="bolum" style="margin-top:16px">🎙️ Ses Kayıtları (${k.sesler.length})</div>
-    ${k.sesler.map((s,i)=>`<div class="detay-ses-ogesi">
-      <div class="detay-ses-ad">🎙️ ${esc(s.ad||s.name||'Kayıt')} — ${sureFmt(s.sure||s.duration||0)}</div>
-      <div class="detay-oynat">
-        <button class="detay-oynat-btn" onclick="oynat(this,'ds${i}')">▶</button>
-        <audio id="ds${i}" src="${s.dataUrl}" style="flex:1;height:44px;"></audio>
+function renderFileList(){
+  const list=document.getElementById('fileList');
+  if(!pendingFiles.length){list.innerHTML='';return;}
+  list.innerHTML=pendingFiles.map((f,i)=>`
+    <div style="background:white;border:1px solid var(--wax-dark);border-radius:6px;padding:10px 12px;display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+      <div style="width:52px;height:40px;background:var(--bark);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">${f.type.startsWith('video')?'🎬':'📸'}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${f.name}</div>
+        <div style="font-size:.72rem;color:var(--bark-mid);">${fmtSize(f.size)}</div>
       </div>
-    </div>`).join('')}`:'';
+      <button onclick="removeFile(${i})" style="background:none;border:none;color:#C62828;cursor:pointer;font-size:1rem;">🗑</button>
+    </div>`).join('');
+}
+function removeFile(i){pendingFiles.splice(i,1);renderFileList();autoSave();}
 
-  const linkHtml=(k.linkler||[]).length?`
-    <div class="bolum" style="margin-top:16px">🔗 Linkler (${k.linkler.length})</div>
-    ${k.linkler.map(l=>`<div class="detay-link-ogesi"><a href="${esc(l.url)}" target="_blank">${l.etiket} ${esc(l.url)}</a></div>`).join('')}`:'';
+/* ── KAYDET ── */
+function saveKovan(silent=false){
+  const name=document.getElementById('fName').value.trim();
+  if(!name){ if(!silent) alert('Kovan adı zorunludur.'); return; }
+  const dateStr=new Date().toLocaleDateString('tr-TR');
+  const data={name,status:document.getElementById('fStatus').value,note:document.getElementById('fNote').value,
+    frames:document.getElementById('fFrames').value,yield:document.getElementById('fYield').value,
+    audios:pendingAudios,links:pendingLinks,files:pendingFiles,updatedAt:dateStr};
+  if(editingId){const idx=kovanlar.findIndex(x=>x.id===editingId);kovanlar[idx]={...kovanlar[idx],...data};}
+  else{
+    // Yeni kovan — editingId'yi set et ki sonraki autoSave güncelleme yapsın
+    const newK={id:currentQrKovanId,date:dateStr,...data};
+    kovanlar.push(newK);
+    editingId=currentQrKovanId;
+  }
+  try{localStorage.setItem('kovanlar',JSON.stringify(kovanlar));}
+  catch(e){
+    if(!silent) alert('Uyarı: Depolama alanı doldu.\nGoogle Drive linki kullanmanız önerilir.');
+    const lite=kovanlar.map(k=>({...k,audios:(k.audios||[]).map(a=>({...a,dataUrl:''}))}));
+    try{localStorage.setItem('kovanlar',JSON.stringify(lite));}catch(e2){}
+  }
+  if(!silent){ closeModal('editOverlay'); render(); }
+  else{ render(); showSavedToast(); }
+}
 
-  document.getElementById('detayIcerik').innerHTML=`
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-      <span class="k-durum ${dc}" style="font-size:1.1rem;">${dl}</span>
-      <span style="font-size:.9rem;color:#6B4C2A;">${k.guncelleme||k.tarih}</span>
+function showSavedToast(){
+  let t=document.getElementById('savedToast');
+  if(!t){
+    t=document.createElement('div');
+    t.id='savedToast';
+    t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#2D5016;color:white;padding:8px 20px;border-radius:20px;font-size:.82rem;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;';
+    t.textContent='✓ Otomatik kaydedildi';
+    document.body.appendChild(t);
+  }
+  t.style.opacity='1';
+  clearTimeout(t._hide);
+  t._hide=setTimeout(()=>t.style.opacity='0', 2000);
+}
+
+
+/* ── QR TARAYICI ── */
+let qrStream = null;
+let qrScanInterval = null;
+
+function openQRScanner() {
+  document.getElementById('qrScanOverlay').classList.add('open');
+  setTimeout(startQRCamera, 300);
+}
+
+async function startQRCamera() {
+  const video = document.getElementById('qrVideo');
+  const statusEl = document.getElementById('qrScanStatus');
+  try {
+    qrStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment', width:{ideal:1280}, height:{ideal:720} }
+    });
+    video.srcObject = qrStream;
+    await video.play();
+    statusEl.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;gap:8px;"><div style="width:10px;height:10px;border-radius:50%;background:#4CAF50;animation:pulse-rec 1.2s infinite;"></div>QR kod bekleniyor...</div>';
+    qrScanInterval = setInterval(scanQRFrame, 200);
+  } catch(e) {
+    statusEl.innerHTML = '<span style="color:var(--rec);">❌ Kamera açılamadı. Tarayıcı ayarlarından kamera iznini kontrol edin.</span>';
+  }
+}
+
+function scanQRFrame() {
+  const video = document.getElementById('qrVideo');
+  const canvas = document.getElementById('qrCanvas');
+  if (!video || video.readyState !== video.HAVE_ENOUGH_DATA) return;
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  if (typeof jsQR === 'undefined') return;
+  const code = jsQR(imageData.data, imageData.width, imageData.height, {inversionAttempts:'dontInvert'});
+  if (code) qrBulundu(code.data);
+}
+
+function qrBulundu(data) {
+  clearInterval(qrScanInterval);
+  let kovanId = null;
+  try { kovanId = new URL(data).searchParams.get('kovan'); } catch(e) {}
+  if (!kovanId && data.startsWith('kovan:')) kovanId = data.split(':')[1];
+
+  if (kovanId) {
+    const k = kovanlar.find(x => x.id === kovanId);
+    if (k) {
+      if (navigator.vibrate) navigator.vibrate(100);
+      document.getElementById('qrScanStatus').innerHTML =
+        '<span style="color:var(--forest-light);">✅ Kovan bulundu: <b>' + esc(k.name) + '</b></span>';
+      setTimeout(() => { closeQRScanner(); openDetail(kovanId); }, 600);
+    } else {
+      document.getElementById('qrScanStatus').innerHTML =
+        '<span style="color:var(--rec);">⚠️ Bu QR kod bu cihazda kayıtlı değil.</span>';
+      setTimeout(() => {
+        document.getElementById('qrScanStatus').innerHTML =
+          '<div style="display:flex;align-items:center;justify-content:center;gap:8px;"><div style="width:10px;height:10px;border-radius:50%;background:#4CAF50;animation:pulse-rec 1.2s infinite;"></div>QR kod bekleniyor...</div>';
+        qrScanInterval = setInterval(scanQRFrame, 200);
+      }, 2000);
+    }
+  } else {
+    qrScanInterval = setInterval(scanQRFrame, 200);
+  }
+}
+
+function closeQRScanner() {
+  clearInterval(qrScanInterval);
+  if (qrStream) { qrStream.getTracks().forEach(t => t.stop()); qrStream = null; }
+  const video = document.getElementById('qrVideo');
+  if (video) video.srcObject = null;
+  document.getElementById('qrScanOverlay').classList.remove('open');
+}
+
+/* ── OTOMATİK KAYDET ── */
+let autoSaveTimer = null;
+function scheduleAutoSave(){
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(autoSave, 800);
+}
+function autoSave(){
+  // Sadece mevcut bir kovan düzenleniyorsa veya isim girilmişse kaydet
+  const name = document.getElementById('fName') && document.getElementById('fName').value.trim();
+  if(!name) return; // İsim yoksa kaydetme
+  saveKovan(true); // silent=true
+}
+
+
+/* ── DETAY ── */
+function openDetail(id){
+  const k=kovanlar.find(x=>x.id===id); if(!k) return;
+  detailKovanId=id;
+  document.getElementById('detailTitle').textContent=k.name;
+  const sc=`status-${k.status}`;
+  const sl={iyi:'✅ İyi Durumda',orta:'⚠️ Orta',zayif:'❌ Zayıf'}[k.status];
+  const audiosHtml=(k.audios||[]).length?`
+    <div class="section-divider" style="margin-top:16px">Ses Kayıtları (${k.audios.length})</div>
+    <div class="detail-audio-list">${k.audios.map(a=>`
+      <div class="detail-audio-item">
+        <div class="detail-audio-name">🎙️ ${esc(a.name)} — ${fmtTime(a.duration)}</div>
+        <audio src="${a.dataUrl}" controls></audio>
+      </div>`).join('')}</div>`:'';
+  const linksHtml=(k.links||[]).length?`
+    <div class="section-divider" style="margin-top:16px">Video & Drive Linkleri (${k.links.length})</div>
+    <div class="detail-drive-links">${k.links.map(l=>`
+      <div class="detail-drive-link">${l.label} &nbsp;<a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.url)}</a></div>`).join('')}</div>`:'';
+  const filesHtml=(k.files||[]).length?`
+    <div class="section-divider" style="margin-top:16px">Videolar & Fotoğraflar (${k.files.length})</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:10px;">
+      ${(k.files||[]).map(f=>`
+        <div style="background:white;border:1px solid var(--wax-dark);border-radius:6px;overflow:hidden;">
+          ${f.type&&f.type.startsWith('video')
+            ? `<video src="${f.dataUrl}" controls style="width:100%;height:100px;object-fit:cover;display:block;"></video>`
+            : `<img src="${f.dataUrl}" style="width:100%;height:100px;object-fit:cover;display:block;">`}
+          <div style="font-size:.7rem;color:var(--bark-mid);padding:5px 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${f.name}</div>
+        </div>`).join('')}
+    </div>`:'';
+    document.getElementById('detailBody').innerHTML=`
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px">
+      <span class="status-badge ${sc}" style="margin:0">${sl}</span>
+      <span style="font-size:.75rem;color:var(--bark-mid)">Son güncelleme: ${k.updatedAt||k.date}</span>
     </div>
-    ${k.not?`<div class="detay-not">${esc(k.not)}</div>`:''}
-    ${k.cerceve||k.bal?`<div style="display:flex;gap:12px;margin-bottom:16px;">
-      ${k.cerceve?`<div class="detay-istat"><div class="detay-istat-sayi">${k.cerceve}</div><div class="detay-istat-lbl">Çerçeve</div></div>`:''}
-      ${k.bal?`<div class="detay-istat"><div class="detay-istat-sayi">${k.bal}</div><div class="detay-istat-lbl">kg Bal</div></div>`:''}
+    ${k.note?`<div style="font-style:italic;color:var(--bark-mid);margin-bottom:16px;line-height:1.6">"${esc(k.note)}"</div>`:''}
+    ${k.frames||k.yield?`<div style="display:flex;gap:12px;margin-bottom:18px">
+      ${k.frames?`<div class="stat" style="flex:1;padding:10px"><div class="stat-num" style="font-size:1.5rem">${k.frames}</div><div class="stat-label">Çerçeve</div></div>`:''}
+      ${k.yield?`<div class="stat" style="flex:1;padding:10px"><div class="stat-num" style="font-size:1.5rem">${k.yield}</div><div class="stat-label">kg Bal</div></div>`:''}
     </div>`:''}
-    <div class="bolum">📱 QR Kod</div>
-    <div style="text-align:center;margin-bottom:16px;">
-      <div id="detayQr" style="display:inline-block;background:white;padding:10px;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.1);"></div>
-      <div style="margin-top:10px;"><button class="btn-qr" onclick="detayQrIndir('${id}','${esc(k.ad)}')">⬇ QR İndir</button></div>
+    <div class="section-divider">QR Kodu</div>
+    <div class="detail-qr" id="detailQr"></div>
+    <div style="text-align:center;margin-bottom:16px">
+      <button class="btn-dl" onclick="dlDetailQR('${id}','${esc(k.name)}')">⬇ QR İndir</button>
     </div>
-    ${sesHtml}${linkHtml}`;
+    ${audiosHtml}${linksHtml}${filesHtml}`;
+  const qrEl=document.getElementById('detailQr');
+  new QRCode(qrEl,{text:`${location.href.split('?')[0]}?kovan=${id}`,width:140,height:140,correctLevel:QRCode.CorrectLevel.M});
+  document.getElementById('detailOverlay').classList.add('open');
+}
+function dlDetailQR(id,name){
+  const canvas=document.querySelector('#detailQr canvas'); if(!canvas) return;
+  const a=document.createElement('a'); a.download=`qr-${name}.png`; a.href=canvas.toDataURL(); a.click();
+}
+function editCurrentKovan(){closeModal('detailOverlay');openEdit(detailKovanId);}
 
-  try{new QRCode(document.getElementById('detayQr'),{text:`${loc()}?kovan=${id}`,width:160,height:160,correctLevel:QRCode.CorrectLevel.M});}catch(e){}
-  document.getElementById('detayOverlay').classList.add('open');
+function checkQRParam(){
+  const id=new URLSearchParams(location.search).get('kovan');
+  if(id&&kovanlar.find(x=>x.id===id)) setTimeout(()=>openDetail(id),300);
 }
 
-function detayQrIndir(id,ad){const c=document.querySelector('#detayQr canvas');if(!c)return;const a=document.createElement('a');a.download=`qr-${ad}.png`;a.href=c.toDataURL();a.click();}
-function duzenle(){kapat('detayOverlay');openForm(detayId);}
-function silOnay(){if(confirm('Bu kovanı silmek istediğinize emin misiniz?')){kovanlar=kovanlar.filter(x=>x.id!==detayId);localStorage.setItem('kovanlar',JSON.stringify(kovanlar));kapat('detayOverlay');render();toast('Kovan silindi');}}
-
-// ── QR TARAYICI ───────────────────────────────────────────────────────────
-let qrStream=null,qrAralik=null;
-function openQR(){document.getElementById('qrOverlay').classList.add('open');setTimeout(qrKameraBaslat,300);}
-async function qrKameraBaslat(){
-  try{
-    qrStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
-    document.getElementById('qrVideo').srcObject=qrStream;
-    await document.getElementById('qrVideo').play();
-    document.getElementById('qrStatus').innerHTML='<span style="color:#4A7C23">● QR kod bekleniyor...</span>';
-    qrAralik=setInterval(qrTara,200);
-  }catch(e){document.getElementById('qrStatus').innerHTML='<span style="color:#C62828">❌ Kamera açılamadı</span>';}
-}
-function qrTara(){
-  const v=document.getElementById('qrVideo'),c=document.getElementById('qrCanvas');
-  if(!v||v.readyState!==v.HAVE_ENOUGH_DATA)return;
-  c.width=v.videoWidth;c.height=v.videoHeight;
-  c.getContext('2d').drawImage(v,0,0);
-  if(typeof jsQR==='undefined')return;
-  const img=c.getContext('2d').getImageData(0,0,c.width,c.height);
-  const code=jsQR(img.data,img.width,img.height,{inversionAttempts:'dontInvert'});
-  if(!code)return;
-  clearInterval(qrAralik);
-  let kid=null;
-  try{kid=new URL(code.data).searchParams.get('kovan');}catch(e){}
-  if(!kid&&code.data.startsWith('kovan:'))kid=code.data.split(':')[1];
-  if(kid){
-    const k=kovanlar.find(x=>x.id===kid);
-    if(k){navigator.vibrate?.(100);document.getElementById('qrStatus').innerHTML=`<span style="color:#4A7C23">✅ ${esc(k.ad)} bulundu!</span>`;setTimeout(()=>{qrKapat();openDetay(kid);},600);}
-    else{document.getElementById('qrStatus').innerHTML='<span style="color:#C62828">⚠️ Bu QR kayıtlı değil</span>';setTimeout(()=>{qrAralik=setInterval(qrTara,200);},2000);}
-  }else{qrAralik=setInterval(qrTara,200);}
-}
-function qrKapat(){clearInterval(qrAralik);qrStream?.getTracks().forEach(t=>t.stop());qrStream=null;document.getElementById('qrVideo').srcObject=null;kapat('qrOverlay');}
-
-// ── VERİ ──────────────────────────────────────────────────────────────────
-function openVeri(){document.getElementById('veriOverlay').classList.add('open');}
-function veriExport(){
-  const b=new Blob([localStorage.getItem('kovanlar')||'[]'],{type:'application/json'});
-  const a=document.createElement('a');
-  a.download=`kovan-${new Date().toLocaleDateString('tr-TR').replace(/\./g,'-')}.json`;
-  a.href=URL.createObjectURL(b);a.click();URL.revokeObjectURL(a.href);
-}
-function veriImport(e){
-  const f=e.target.files[0];if(!f)return;
-  const r=new FileReader();
-  r.onload=ev=>{
-    try{
-      const yeni=JSON.parse(ev.target.result);
-      if(!Array.isArray(yeni))throw new Error();
-      const mevcut=JSON.parse(localStorage.getItem('kovanlar')||'[]');
-      const idler=new Set(mevcut.map(k=>k.id));
-      const ekle=yeni.filter(k=>!idler.has(k.id));
-      kovanlar=[...mevcut,...ekle];
-      localStorage.setItem('kovanlar',JSON.stringify(kovanlar));
-      render();
-      document.getElementById('importSonuc').innerHTML=`<span style="color:#2D5016">✅ ${ekle.length} kovan eklendi. Toplam: ${kovanlar.length}</span>`;
-      setTimeout(()=>kapat('veriOverlay'),1500);
-    }catch(e){document.getElementById('importSonuc').innerHTML='<span style="color:#C62828">❌ Geçersiz dosya</span>';}
-  };
-  r.readAsText(f);e.target.value='';
-}
-
-// ── UTIL ──────────────────────────────────────────────────────────────────
-function uid(){return 'K'+Date.now()+Math.random().toString(36).slice(2,6);}
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function sureFmt(s){if(!s)return'0:00';return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
-function boyutFmt(b){return b<1024*1024?(b/1024).toFixed(0)+' KB':(b/(1024*1024)).toFixed(1)+' MB';}
-function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.opacity='1';clearTimeout(t._t);t._t=setTimeout(()=>t.style.opacity='0',2500);}
+function fmtSize(b){return b<1024*1024?(b/1024).toFixed(0)+' KB':(b/(1024*1024)).toFixed(1)+' MB';}
+function fmtTime(s){if(!s)return'0:00';return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
 
-// ── QR PARAM & INIT ───────────────────────────────────────────────────────
-window.addEventListener('beforeunload',()=>{if(document.getElementById('fAd')?.value.trim())_kaydet(true);});
-
-if('caches' in window)caches.keys().then(keys=>keys.forEach(k=>{if(k!=='kovan-v5')caches.delete(k);}));
-if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+['editOverlay','detailOverlay'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',function(e){if(e.target===this)closeModal(id);});
+});
 
 render();
+checkQRParam();
+document.getElementById('qrScanOverlay').addEventListener('click', function(e){ if(e.target===this) closeQRScanner(); });
+document.getElementById('qrScanOverlay').addEventListener('click', function(e){ if(e.target===this) closeQRScanner(); });
 
-const qrParam=new URLSearchParams(location.search).get('kovan');
-if(qrParam&&kovanlar.find(x=>x.id===qrParam))setTimeout(()=>openDetay(qrParam),300);
+// ── SERVICE WORKER KAYIT ──
+// Sayfa kapanırken/yenilenirken kaydet
+window.addEventListener('beforeunload', () => {
+  const nameEl = document.getElementById('fName');
+  if(nameEl && nameEl.value.trim()) saveKovan(true);
+});
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(() => console.log('SW registered'))
+      .catch(e => console.log('SW error:', e));
+  });
+}
+
+// ── PWA KURULUM BANNER ──
+let deferredPrompt = null;
+const installBanner = document.getElementById('installBanner');
+const btnInstall = document.getElementById('btnInstall');
+const btnInstallClose = document.getElementById('btnInstallClose');
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  if (installBanner) installBanner.style.display = 'flex';
+});
+
+if (btnInstall) {
+  btnInstall.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    installBanner.style.display = 'none';
+  });
+}
+if (btnInstallClose) {
+  btnInstallClose.addEventListener('click', () => {
+    installBanner.style.display = 'none';
+  });
+}
+
+window.addEventListener('appinstalled', () => {
+  if (installBanner) installBanner.style.display = 'none';
+  deferredPrompt = null;
+});
 </script>
 </body>
 </html>
