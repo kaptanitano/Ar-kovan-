@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kovan Verisi Yükle</title>
+<style>
+body{font-family:sans-serif;background:#F5EFE0;padding:24px;text-align:center;}
+h2{color:#3D2B1A;margin-bottom:8px;}
+p{color:#6B4C2A;margin-bottom:24px;font-size:1rem;}
+.btn{display:block;width:100%;padding:16px;border:none;border-radius:12px;font-size:1.1rem;font-weight:700;cursor:pointer;margin-bottom:12px;}
+.btn-sec{background:#D4860A;color:white;}
+.btn-yukle{background:#2D5016;color:white;}
+#sonuc{margin-top:16px;font-size:1rem;font-weight:700;padding:12px;border-radius:8px;}
+.basarili{background:#E8F5E9;color:#2E7D32;}
+.hata{background:#FFEBEE;color:#C62828;}
+input[type=file]{display:none;}
+</style>
+</head>
+<body>
+<h2>🐝 Kovan Verisi Yükle</h2>
+<p>JSON dosyasını seçince veriler otomatik olarak uygulamaya aktarılır.</p>
+
+<button class="btn btn-sec" onclick="document.getElementById('dosya').click()">
+  📂 JSON Dosyası Seç
+</button>
+<input type="file" id="dosya" accept=".json" onchange="yukle(event)">
+
+<div id="sonuc"></div>
+
+<script>
+function yukle(e) {
+  const f = e.target.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    try {
+      let veri = JSON.parse(ev.target.result);
+      if (!Array.isArray(veri)) throw new Error('Geçersiz format');
+
+      // Her iki formatı dönüştür
+      veri = veri.map(k => ({
+        id: k.id,
+        ad: k.ad || k.name || 'İsimsiz',
+        not: k.not || k.note || '',
+        durum: k.durum || k.status || 'iyi',
+        cerceve: k.cerceve || k.frames || '',
+        bal: k.bal || k.yield || '',
+        tarih: k.tarih || k.date || '',
+        guncelleme: k.guncelleme || k.updatedAt || '',
+        sesler: (k.sesler || k.audios || []).map(a => ({
+          id: a.id || ('s' + Math.random()),
+          ad: a.ad || a.name || 'Kayıt',
+          dataUrl: a.dataUrl || '',
+          sure: a.sure || a.duration || 0,
+          boyut: a.boyut || a.size || 0
+        })),
+        dosyalar: [],
+        linkler: (k.linkler || k.links || []).map(l => ({
+          id: l.id || ('l' + Math.random()),
+          url: l.url || '',
+          etiket: l.etiket || l.label || '🔗'
+        }))
+      }));
+
+      localStorage.setItem('kovanlar', JSON.stringify(veri));
+      
+      document.getElementById('sonuc').className = 'basarili';
+      document.getElementById('sonuc').innerHTML = 
+        `✅ ${veri.length} kovan yüklendi!<br><br>
+         <a href="/" style="color:#2D5016;font-size:1.1rem;">→ Uygulamaya Dön</a>`;
+    } catch(err) {
+      document.getElementById('sonuc').className = 'hata';
+      document.getElementById('sonuc').innerHTML = '❌ Hata: ' + err.message;
+    }
+  };
+  r.readAsText(f, 'UTF-8');
+}
+</script>
+</body>
+</html>
